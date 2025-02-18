@@ -1,11 +1,15 @@
 package com.guanghan.lyhoj.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.guanghan.lyhoj.common.BaseResponse;
 import com.guanghan.lyhoj.common.ErrorCode;
 import com.guanghan.lyhoj.common.ResultUtils;
 import com.guanghan.lyhoj.exception.BusinessException;
 import com.guanghan.lyhoj.model.dto.questionsubmit.QuestionSubmitAddRequest;
+import com.guanghan.lyhoj.model.dto.questionsubmit.QuestionSubmitQueryRequest;
+import com.guanghan.lyhoj.model.entity.QuestionSubmit;
 import com.guanghan.lyhoj.model.entity.User;
+import com.guanghan.lyhoj.model.vo.QuestionSubmitVO;
 import com.guanghan.lyhoj.service.QuestionSubmitService;
 import com.guanghan.lyhoj.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +37,11 @@ public class QuestionSubmitController {
     private UserService userService;
 
     /**
-     * 点赞 / 取消点赞
+     * 提交
      *
      * @param questionSubmitAddRequest
      * @param request
-     * @return resultNum 本次点赞变化数
+     * @return resultNum 提交记录id
      */
     @PostMapping("/")
     public BaseResponse<Long> doQuestionSubmit(@RequestBody QuestionSubmitAddRequest questionSubmitAddRequest,
@@ -45,11 +49,31 @@ public class QuestionSubmitController {
         if (questionSubmitAddRequest == null || questionSubmitAddRequest.getQuestionId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // 登录才能点赞
+        // 登录才能提交
         final User loginUser = userService.getLoginUser(request);
-        long questionId = questionSubmitAddRequest.getQuestionId();
         long result = questionSubmitService.doQuestionSubmit(questionSubmitAddRequest, loginUser);
         return ResultUtils.success(result);
     }
+
+    /**
+     * 分页获取题目提交列表（除了管理员外，普通用户只能看到非代码，提及代码等公开信息）
+     *
+     * @param questionSubmitQueryRequest
+     * @return
+     */
+    @PostMapping("/list/page")
+    public BaseResponse<Page<QuestionSubmitVO>> listPostByPage(@RequestBody QuestionSubmitQueryRequest questionSubmitQueryRequest,
+                                                               HttpServletRequest request) {
+        long current = questionSubmitQueryRequest.getCurrent();
+        long size = questionSubmitQueryRequest.getPageSize();
+        //从数据库中查询题目原始的提及记录
+        Page<QuestionSubmit> questionSubmitPage = questionSubmitService.page(new Page<>(current, size),
+                questionSubmitService.getQueryWrapper(questionSubmitQueryRequest));
+        //根据当前登录用户身份的不同脱敏返回
+        final User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(questionSubmitService.getQuestionSubmitVOPage(questionSubmitPage,loginUser));
+    }
+
+
 
 }
