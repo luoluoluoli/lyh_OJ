@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.guanghan.lyhoj.model.vo.QuestionVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author luoluoluo
@@ -50,4 +51,5 @@ public interface QuestionService extends IService<Question> {
      */
     Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage, HttpServletRequest request);
 
+    List<String> getQuestionTags();
 }

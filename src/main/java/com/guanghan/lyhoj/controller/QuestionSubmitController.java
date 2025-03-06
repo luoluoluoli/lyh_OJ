@@ -64,7 +64,7 @@ public class QuestionSubmitController {
     @PostMapping("/list/page")
     public BaseResponse<Page<QuestionSubmitVO>> listPostByPage(@RequestBody QuestionSubmitQueryRequest questionSubmitQueryRequest,
                                                                HttpServletRequest request) {
-        long current = questionSubmitQueryRequest.getCurrent();
+        long current = questionSubmitQueryRequest.getPageNum();
         long size = questionSubmitQueryRequest.getPageSize();
         //从数据库中查询题目原始的提及记录
         Page<QuestionSubmit> questionSubmitPage = questionSubmitService.page(new Page<>(current, size),

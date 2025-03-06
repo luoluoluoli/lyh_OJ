@@ -101,28 +101,28 @@ public class UserController {
         return ResultUtils.success(loginUserVO);
     }
 
-    /**
-     * 用户登录（微信开放平台）
-     */
-    @GetMapping("/login/wx_open")
-    public BaseResponse<LoginUserVO> userLoginByWxOpen(HttpServletRequest request, HttpServletResponse response,
-            @RequestParam("code") String code) {
-        WxOAuth2AccessToken accessToken;
-        try {
-            WxMpService wxService = wxOpenConfig.getWxMpService();
-            accessToken = wxService.getOAuth2Service().getAccessToken(code);
-            WxOAuth2UserInfo userInfo = wxService.getOAuth2Service().getUserInfo(accessToken, code);
-            String unionId = userInfo.getUnionId();
-            String mpOpenId = userInfo.getOpenid();
-            if (StringUtils.isAnyBlank(unionId, mpOpenId)) {
-                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "登录失败，系统错误");
-            }
-            return ResultUtils.success(userService.userLoginByMpOpen(userInfo, request));
-        } catch (Exception e) {
-            log.error("userLoginByWxOpen error", e);
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "登录失败，系统错误");
-        }
-    }
+//    /**
+//     * 用户登录（微信开放平台）
+//     */
+//    @GetMapping("/login/wx_open")
+//    public BaseResponse<LoginUserVO> userLoginByWxOpen(HttpServletRequest request, HttpServletResponse response,
+//            @RequestParam("code") String code) {
+//        WxOAuth2AccessToken accessToken;
+//        try {
+//            WxMpService wxService = wxOpenConfig.getWxMpService();
+//            accessToken = wxService.getOAuth2Service().getAccessToken(code);
+//            WxOAuth2UserInfo userInfo = wxService.getOAuth2Service().getUserInfo(accessToken, code);
+//            String unionId = userInfo.getUnionId();
+//            String mpOpenId = userInfo.getOpenid();
+//            if (StringUtils.isAnyBlank(unionId, mpOpenId)) {
+//                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "登录失败，系统错误");
+//            }
+//            return ResultUtils.success(userService.userLoginByMpOpen(userInfo, request));
+//        } catch (Exception e) {
+//            log.error("userLoginByWxOpen error", e);
+//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "登录失败，系统错误");
+//        }
+//    }
 
     /**
      * 用户注销
@@ -260,7 +260,7 @@ public class UserController {
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest,
             HttpServletRequest request) {
-        long current = userQueryRequest.getCurrent();
+        long current = userQueryRequest.getPageNum();
         long size = userQueryRequest.getPageSize();
         Page<User> userPage = userService.page(new Page<>(current, size),
                 userService.getQueryWrapper(userQueryRequest));
@@ -280,7 +280,7 @@ public class UserController {
         if (userQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        long current = userQueryRequest.getCurrent();
+        long current = userQueryRequest.getPageNum();
         long size = userQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);

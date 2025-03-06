@@ -42,6 +42,16 @@ public class QuestionController {
     // region 增删改查
 
     /**
+     * 获取所有标签
+     * @return
+     */
+    @GetMapping("/tags")
+    public BaseResponse<List<String>> getProblemTags() {
+        List<String> tags = questionService.getQuestionTags();
+        return ResultUtils.success(tags);
+    }
+
+    /**
      * 创建
      *
      * @param questionAddRequest
@@ -146,11 +156,12 @@ public class QuestionController {
      * @return
      */
     @GetMapping("/get/vo")
-    public BaseResponse<QuestionVO> getQuestionVOById(long id, HttpServletRequest request) {
-        if (id <= 0) {
+    public BaseResponse<QuestionVO> getQuestionVOById(String id, HttpServletRequest request) {
+        Long questionId = Long.valueOf(id);
+        if (questionId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Question question = questionService.getById(id);
+        Question question = questionService.getById(questionId);
         if (question == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
@@ -166,7 +177,7 @@ public class QuestionController {
     @PostMapping("/list/page")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
-        long current = questionQueryRequest.getCurrent();
+        long current = questionQueryRequest.getPageNum();
         long size = questionQueryRequest.getPageSize();
         Page<Question> questionPage = questionService.page(new Page<>(current, size),
                 questionService.getQueryWrapper(questionQueryRequest));
@@ -183,7 +194,7 @@ public class QuestionController {
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
             HttpServletRequest request) {
-        long current = questionQueryRequest.getCurrent();
+        long current = questionQueryRequest.getPageNum();
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
@@ -207,7 +218,7 @@ public class QuestionController {
         }
         User loginUser = userService.getLoginUser(request);
         questionQueryRequest.setUserId(loginUser.getId());
-        long current = questionQueryRequest.getCurrent();
+        long current = questionQueryRequest.getPageNum();
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);

@@ -2,6 +2,9 @@ package com.guanghan.lyhoj.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,13 +12,16 @@ import com.guanghan.lyhoj.common.ErrorCode;
 import com.guanghan.lyhoj.constant.CommonConstant;
 import com.guanghan.lyhoj.exception.BusinessException;
 import com.guanghan.lyhoj.exception.ThrowUtils;
+import com.guanghan.lyhoj.mapper.QuestionSubmitMapper;
 import com.guanghan.lyhoj.model.dto.question.QuestionQueryRequest;
 import com.guanghan.lyhoj.model.entity.*;
 import com.guanghan.lyhoj.model.entity.Question;
+import com.guanghan.lyhoj.model.enums.QuestionSubmitStatusEnum;
 import com.guanghan.lyhoj.model.vo.QuestionVO;
 import com.guanghan.lyhoj.model.vo.UserVO;
 import com.guanghan.lyhoj.service.QuestionService;
 import com.guanghan.lyhoj.mapper.QuestionMapper;
+import com.guanghan.lyhoj.service.QuestionSubmitService;
 import com.guanghan.lyhoj.service.UserService;
 import com.guanghan.lyhoj.utils.SqlUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -36,6 +42,9 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
     @Resource
     private UserService userService;
+    
+    @Resource
+    private QuestionSubmitMapper questionSubmitMapper;
 
 
     @Override
@@ -82,33 +91,75 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
      */
     @Override
     public QueryWrapper<Question> getQueryWrapper(QuestionQueryRequest questionQueryRequest) {
+
         QueryWrapper<Question> queryWrapper = new QueryWrapper<>();
         if (questionQueryRequest == null) {
             return queryWrapper;
         }
-        Long id = questionQueryRequest.getId();
-        String title = questionQueryRequest.getTitle();
-        String content = questionQueryRequest.getContent();
-        String answer = questionQueryRequest.getAnswer();
-        List<String> tagList = questionQueryRequest.getTags();
-        Long userId = questionQueryRequest.getUserId();
-
         String sortField = questionQueryRequest.getSortField();
         String sortOrder = questionQueryRequest.getSortOrder();
+        String keyword = questionQueryRequest.getKeyword();
+        String status = questionQueryRequest.getStatus();
+        String difficulty = questionQueryRequest.getDifficulty();
+        List<String> tags = questionQueryRequest.getTags();
+        
 
-        // 拼接查询条件
-        queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
-        queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
-        queryWrapper.like(StringUtils.isNotBlank(answer), "answer", answer);
-
-        if (CollUtil.isNotEmpty(tagList)) {
-            for (String tag : tagList) {
-                queryWrapper.like("tags", "\"" + tag + "\"");
+        //不查询content和answer，因为很多时候不显示
+        queryWrapper.select(Question.class, item -> !item.getColumn().equals("content") && !item.getColumn().equals("answer"));
+        if(StrUtil.isNotBlank(status) && !status.equals("全部")){
+            Long userId = questionQueryRequest.getUserId();
+            Set<Long> passedIds;
+            Set<Long> triedIds;
+            switch (status){
+                case "已通过":
+                    passedIds = questionSubmitMapper.selectList(new LambdaQueryWrapper<QuestionSubmit>()
+                                    .select(QuestionSubmit::getQuestionId).eq(QuestionSubmit::getUserId, userId)
+                                    .eq(QuestionSubmit::getStatus, QuestionSubmitStatusEnum.SUCCEED.getValue()))
+                            .stream().map(QuestionSubmit::getQuestionId).collect(Collectors.toSet());
+                    if(passedIds.isEmpty()){
+                        return null;
+                    }
+                    queryWrapper.in("id", passedIds);
+                    break;
+                case "尝试过":
+                    passedIds = questionSubmitMapper.selectList(new LambdaQueryWrapper<QuestionSubmit>()
+                                    .select(QuestionSubmit::getQuestionId).eq(QuestionSubmit::getUserId, userId)
+                                    .eq(QuestionSubmit::getStatus, QuestionSubmitStatusEnum.SUCCEED.getValue()))
+                            .stream().map(QuestionSubmit::getQuestionId).collect(Collectors.toSet());
+                    triedIds = questionSubmitMapper.selectList(new LambdaQueryWrapper<QuestionSubmit>()
+                                    .select(QuestionSubmit::getQuestionId).eq(QuestionSubmit::getUserId, userId)
+                                    .ne(QuestionSubmit::getStatus, QuestionSubmitStatusEnum.SUCCEED.getValue()))
+                            .stream().map(QuestionSubmit::getQuestionId).collect(Collectors.toSet());
+                    triedIds = (Set<Long>) CollUtil.subtract(triedIds, passedIds);
+                    if(triedIds.isEmpty()){
+                        return null;
+                    }
+                    queryWrapper.in("id", triedIds);
+                    break;
+                case "未开始":
+                    triedIds = questionSubmitMapper.selectList(new LambdaQueryWrapper<QuestionSubmit>()
+                                    .select(QuestionSubmit::getQuestionId).eq(QuestionSubmit::getUserId, userId))
+                            .stream().map(QuestionSubmit::getQuestionId).collect(Collectors.toSet());
+                    if(!triedIds.isEmpty()){
+                        queryWrapper.notIn("id", triedIds);
+                    }
+                    break;
             }
         }
 
-        queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+        // 拼接查询条件
+        boolean likeQuery = StringUtils.isNotBlank(keyword);
+        queryWrapper.like(likeQuery, "title", keyword);
+        queryWrapper.like(likeQuery, "content", keyword);
+        queryWrapper.like(likeQuery, "answer", keyword);
+
+        if (CollUtil.isNotEmpty(tags)) {
+            for (String tag : tags) {
+                queryWrapper.like("tags", "\"" + tag + "\"");
+            }
+        }
+        queryWrapper.eq(StringUtils.isNotBlank(difficulty), "difficulty", difficulty);
+//        queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
         queryWrapper.eq("isDelete", false);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
@@ -155,6 +206,14 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         }).collect(Collectors.toList());
         questionVOPage.setRecords(questionVOList);
         return questionVOPage;
+    }
+
+    @Override
+    public List<String> getQuestionTags() {
+        return lambdaQuery().select(Question::getTags).list().stream()
+                .flatMap(problem -> JSONUtil.toList(problem.getTags(), String.class).stream())
+                .distinct().collect(Collectors.toList());
+
     }
 }
 

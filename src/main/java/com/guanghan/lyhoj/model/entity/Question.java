@@ -27,12 +27,18 @@ public class Question {
     /**
      * 内容
      */
-    private String content;
+    private String content = "测试内容";
 
     /**
      * 标签列表（json 数组）
      */
     private String tags;
+
+    /**
+     * 难度
+     */
+    private String difficulty;
+
 
     /**
      * 题目答案
@@ -78,6 +84,8 @@ public class Question {
      * 创建时间
      */
     private Date createTime;
+
+
 
     /**
      * 更新时间

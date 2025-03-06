@@ -33,20 +33,16 @@ public class QuestionQueryRequest extends PageRequest implements Serializable {
      */
     private String content;
 
-    /**
-     * 答案
-     */
-    private String answer;
-
-    /**
-     * 标签列表（json 数组）
-     */
     private List<String> tags;
+    private String status;
+    private String difficulty;
+    private String keyword;
 
-    /**
-     * 创建用户 id
-     */
     private Long userId;
+
+
+
+
 
     private static final long serialVersionUID = 1L;
 }

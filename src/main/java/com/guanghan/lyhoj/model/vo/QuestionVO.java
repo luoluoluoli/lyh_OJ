@@ -32,16 +32,24 @@ public class QuestionVO {
     private String title;
 
     /**
+     * 状态（已通过、尝试过、未开始）
+     */
+    private String status = "未开始";
+
+    /**
      * 内容
      */
-    private String content;
+    private String content = "测试内容";
 
     /**
      * 标签列表（json 数组）
      */
     private List<String> tags;
 
-
+    /**
+     * 难度
+     */
+    private String difficulty;
 
     /**
      * 题目提交数

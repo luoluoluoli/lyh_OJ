@@ -14,6 +14,9 @@ public enum JudgeInfoMessageEnum {
 
     ACEEPTED("成功", "Accepted"),
 
+    TIME_LIMIT_EXCEEDED("答案超时","TimeLimitExceeded"),
+    MEMERY_LIMIT_EXCEEDED("内存超出","MemeryLimitExceeded"),
+
     WRONG_ANSER("答案错误","Wrong Answer"),;
 
     private final String text;
