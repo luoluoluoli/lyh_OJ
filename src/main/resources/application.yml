@@ -101,3 +101,5 @@ knife4j:
           - com.guanghan.lyhoj.controller
 codesandbox:
   type: "remote"
+api:
+  key: "sk-018b0fbd0fef42bd99a3ebfd017b9d4f"
