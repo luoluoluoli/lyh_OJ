@@ -86,7 +86,6 @@ public class Question {
     private Date createTime;
 
 
-
     /**
      * 更新时间
      */

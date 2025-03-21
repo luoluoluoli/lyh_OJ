@@ -35,6 +35,11 @@ public class QuestionAddRequest implements Serializable {
     private String answer;
 
     /**
+     * 题目难度
+     */
+    private String difficulty;
+
+    /**
      * 判题用例（json 数组）
      */
     private List<JudgeCase> judgeCase;

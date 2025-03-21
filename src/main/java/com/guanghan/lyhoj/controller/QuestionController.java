@@ -66,13 +66,20 @@ public class QuestionController {
         Question question = new Question();
         BeanUtils.copyProperties(questionAddRequest, question);
         List<String> tags = questionAddRequest.getTags();
+        //标签
         if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
         }
+        //测试用例
         List<JudgeCase> judgeCase = questionAddRequest.getJudgeCase();
         if (judgeCase != null) {
-            question.setJudgeConfig(JSONUtil.toJsonStr(judgeCase));
+            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
         }
+        //答案
+        if (questionAddRequest.getAnswer() != null) {
+            question.setAnswer(questionAddRequest.getAnswer());
+        }
+        //判题配置
         JudgeConfig judgeConfig = questionAddRequest.getJudgeConfig();
         if (judgeConfig != null) {
             question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
