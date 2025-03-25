@@ -23,7 +23,7 @@ public class AIChattestText {
                 .build();
         GenerationParam param = GenerationParam.builder()
                 // 若没有配置环境变量，请用百炼API Key将下行替换为：.apiKey("sk-xxx")
-                .apiKey(System.getenv("DASHSCOPE_API_KEY"))
+                .apiKey("sk-018b0fbd0fef42bd99a3ebfd017b9d4f")
                 // 模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
                 .model("qwen-plus")
                 .messages(Arrays.asList(systemMsg, userMsg))
