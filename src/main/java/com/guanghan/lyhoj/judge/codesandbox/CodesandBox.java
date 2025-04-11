@@ -9,5 +9,5 @@ public interface CodesandBox {
      * @param executeCodeRequest
      * @return
      */
-    ExecuteCodeResponse ExecuteCode(ExecuteCodeRequest executeCodeRequest);
+    ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest);
 }

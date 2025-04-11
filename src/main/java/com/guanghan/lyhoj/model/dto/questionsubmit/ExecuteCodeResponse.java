@@ -1,11 +1,18 @@
-package com.guanghan.lyhoj.judge.codesandbox.model;
+package com.guanghan.lyhoj.model.dto.questionsubmit;
 
-import com.guanghan.lyhoj.model.dto.questionsubmit.JudgeInfo;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
+
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ExecuteCodeResponse {
+
     private List<String> outputList;
 
     /**
@@ -22,7 +29,4 @@ public class ExecuteCodeResponse {
      * 判题信息
      */
     private JudgeInfo judgeInfo;
-
-
-
 }

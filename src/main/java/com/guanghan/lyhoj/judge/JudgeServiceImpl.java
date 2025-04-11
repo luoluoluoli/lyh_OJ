@@ -23,7 +23,7 @@ import com.guanghan.lyhoj.service.QuestionSubmitService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,9 +77,9 @@ public class JudgeServiceImpl implements JudgeService {
                 .inputList(inputList)
                 .build();
 //        调用沙箱，获取到执行结果
-        CodesandBox codesandBox = CodeSandBoxFactory.newInstance(type);
+        CodesandBox codesandBox = CodeSandBoxFactory.newInstance(questionSubmit.getLanguage());
         CodeSandBoxProxy codeSandBoxProxy = new CodeSandBoxProxy(codesandBox);
-        ExecuteCodeResponse executeCodeResponse = codeSandBoxProxy.ExecuteCode(request);
+        ExecuteCodeResponse executeCodeResponse = codeSandBoxProxy.executeCode(request);
         List<String> outputList = executeCodeResponse.getOutputList();
         System.out.println(executeCodeResponse);
 //        根据沙箱的执行结果，设置题目的判题状态和信息

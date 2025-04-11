@@ -1,20 +1,20 @@
 package com.guanghan.lyhoj.judge.codesandbox;
 
-import com.guanghan.lyhoj.judge.codesandbox.impl.exampleCodeSandBox;
-import com.guanghan.lyhoj.judge.codesandbox.impl.remoteCodeSandBox;
-import com.guanghan.lyhoj.judge.codesandbox.impl.thirdCodeSandBox;
+import com.guanghan.lyhoj.judge.codesandbox.impl.CppCodeSandBox;
+import com.guanghan.lyhoj.judge.codesandbox.impl.JavaCodeSandBox;
+import com.guanghan.lyhoj.judge.codesandbox.impl.PythonCodeSandBox;
 
 public class CodeSandBoxFactory {
     public static CodesandBox newInstance(String type) {
         switch (type) {
-            case "example":
-                return new exampleCodeSandBox();
-            case "remote":
-                return new remoteCodeSandBox();
-            case "third":
-                return new thirdCodeSandBox();
+            case "java":
+                return new JavaCodeSandBox();
+            case "python":
+                return new PythonCodeSandBox();
+            case "cpp":
+                return new CppCodeSandBox();
             default:
-                return new exampleCodeSandBox();
+                return new JavaCodeSandBox();
         }
 
     }

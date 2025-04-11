@@ -13,9 +13,9 @@ public class CodeSandBoxProxy implements CodesandBox{
     }
 
     @Override
-    public ExecuteCodeResponse ExecuteCode(ExecuteCodeRequest executeCodeRequest) {
+    public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
         log.info("ExecuteCodeRequest:{}", executeCodeRequest);
-        ExecuteCodeResponse executeCodeResponse = codesandBox.ExecuteCode(executeCodeRequest);
+        ExecuteCodeResponse executeCodeResponse = codesandBox.executeCode(executeCodeRequest);
         log.info("ExecuteCodeResponse:{}", executeCodeResponse);
         return executeCodeResponse;
     }

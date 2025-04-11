@@ -8,7 +8,7 @@ import com.guanghan.lyhoj.model.entity.Question;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.guanghan.lyhoj.model.vo.QuestionVO;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**

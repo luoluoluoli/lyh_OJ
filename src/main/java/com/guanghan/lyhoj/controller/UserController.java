@@ -6,7 +6,6 @@ import com.guanghan.lyhoj.common.BaseResponse;
 import com.guanghan.lyhoj.common.DeleteRequest;
 import com.guanghan.lyhoj.common.ErrorCode;
 import com.guanghan.lyhoj.common.ResultUtils;
-import com.guanghan.lyhoj.config.WxOpenConfig;
 import com.guanghan.lyhoj.constant.UserConstant;
 import com.guanghan.lyhoj.exception.BusinessException;
 import com.guanghan.lyhoj.exception.ThrowUtils;
@@ -22,14 +21,10 @@ import com.guanghan.lyhoj.model.vo.UserVO;
 import com.guanghan.lyhoj.service.UserService;
 
 import java.util.List;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
-import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
-import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.DigestUtils;
@@ -37,7 +32,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.guanghan.lyhoj.service.impl.UserServiceImpl.SALT;
@@ -54,8 +48,6 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @Resource
-    private WxOpenConfig wxOpenConfig;
 
     // region 登录相关
 

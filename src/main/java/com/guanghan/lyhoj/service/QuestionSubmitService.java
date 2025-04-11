@@ -11,7 +11,7 @@ import com.guanghan.lyhoj.model.entity.User;
 import com.guanghan.lyhoj.model.vo.PostVO;
 import com.guanghan.lyhoj.model.vo.QuestionSubmitVO;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author luoluoluo

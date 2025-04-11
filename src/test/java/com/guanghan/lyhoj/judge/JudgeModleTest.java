@@ -35,10 +35,11 @@ public class JudgeModleTest {
                         "}")
                 .inputList(Arrays.asList("1 2","3 4"))
                 .build();
-        ExecuteCodeResponse executeCodeResponse = codeSandBoxProxy.ExecuteCode(request);
+        ExecuteCodeResponse executeCodeResponse = codeSandBoxProxy.executeCode(request);
         System.out.println(executeCodeResponse);
 
 
     }
+
 
 }

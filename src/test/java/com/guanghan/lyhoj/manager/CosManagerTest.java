@@ -1,6 +1,6 @@
 package com.guanghan.lyhoj.manager;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
